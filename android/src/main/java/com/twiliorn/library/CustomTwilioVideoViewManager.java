@@ -188,6 +188,8 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ON_PARTICIPANT_REMOVED_DATA_TRACK, MapBuilder.of("registrationName", ON_PARTICIPANT_REMOVED_DATA_TRACK),
                 ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS, MapBuilder.of("registrationName", ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS),
                 ON_SCREEN_SHARE_CHANGED, MapBuilder.of("registrationName", ON_SCREEN_SHARE_CHANGED)
+                ON_RECORDING_STARTED, MapBuilder.of("registrationName", ON_RECORDING_STARTED),
+                ON_RECORDING_STOPPED, MapBuilder.of("registrationName", ON_RECORDING_STOPPED)
         ));
 
         map.putAll(MapBuilder.of(
@@ -197,9 +199,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ON_PARTICIPANT_DISABLED_AUDIO_TRACK, MapBuilder.of("registrationName", ON_PARTICIPANT_DISABLED_AUDIO_TRACK),
                 ON_STATS_RECEIVED, MapBuilder.of("registrationName", ON_STATS_RECEIVED),
                 ON_NETWORK_QUALITY_LEVELS_CHANGED, MapBuilder.of("registrationName", ON_NETWORK_QUALITY_LEVELS_CHANGED),
-                ON_DOMINANT_SPEAKER_CHANGED, MapBuilder.of("registrationName", ON_DOMINANT_SPEAKER_CHANGED),
-                ON_RECORDING_STARTED, MapBuilder.of("registrationName", ON_RECORDING_STARTED),
-                ON_RECORDING_STOPPED, MapBuilder.of("registrationName", ON_RECORDING_STOPPED)
+                ON_DOMINANT_SPEAKER_CHANGED, MapBuilder.of("registrationName", ON_DOMINANT_SPEAKER_CHANGED)
         ));
 
         return map;
