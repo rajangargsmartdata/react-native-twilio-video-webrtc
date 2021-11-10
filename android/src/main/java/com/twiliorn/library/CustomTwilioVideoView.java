@@ -120,6 +120,8 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DOMINANT_SPEAKER_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECORDING_STARTED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECORDING_STOPPED;
 
 public class CustomTwilioVideoView extends View implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "CustomTwilioVideoView";
@@ -189,6 +191,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         String ON_DOMINANT_SPEAKER_CHANGED = "onDominantSpeakerDidChange";
         String ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS = "onLocalParticipantSupportedCodecs";
         String ON_SCREEN_SHARE_CHANGED = "onScreenShareChanged";
+        String ON_RECORDING_STARTED = "onRecordingStarted";
+        String ON_RECORDING_STOPPED = "onRecordingStopped";
     }
 
     private final ThemedReactContext themedReactContext;
@@ -1068,6 +1072,14 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         }
     }
 
+    public void isActive() {
+      return room != null;
+    }
+
+    public void isRecording() {
+      return room.isRecording();
+    }
+
     public void disableOpenSLES() {
         WebRtcAudioManager.setBlacklistDeviceForOpenSLESUsage(true);
     }
@@ -1179,10 +1191,16 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
             @Override
             public void onRecordingStarted(Room room) {
+              WritableMap event = new WritableNativeMap();
+
+              pushEvent(CustomTwilioVideoView.this, ON_RECORDING_STARTED, event);
             }
 
             @Override
             public void onRecordingStopped(Room room) {
+              WritableMap event = new WritableNativeMap();
+              
+              pushEvent(CustomTwilioVideoView.this, ON_RECORDING_STOPPED, event);
             }
 
             @Override
