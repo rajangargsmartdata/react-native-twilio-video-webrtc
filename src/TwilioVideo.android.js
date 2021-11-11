@@ -194,6 +194,9 @@ class CustomTwilioVideoView extends Component {
     if (ref) {
       this._videoRef = ref;
       this._videoHandle = findNodeHandle(ref);
+    } else {
+      this._videoRef = null;
+      this._videoHandle = null;
     }
   };
 
@@ -362,7 +365,7 @@ class CustomTwilioVideoView extends Component {
   render() {
     return (
       <NativeCustomTwilioVideoView
-        ref={setRef}
+        ref={this.setRef}
         {...this.props}
         {...this.buildNativeEventWrappers()}
       />

@@ -28,6 +28,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 import android.os.Handler;
 import android.os.HandlerThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringDef;
 import android.util.Log;
 import android.view.View;
 
@@ -269,6 +271,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
     public CustomTwilioVideoView(ThemedReactContext context) {
         super(context);
+        releaseResource();
+
         this.themedReactContext = context;
         this.eventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
 
@@ -454,52 +458,64 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
     @Override
     public void onHostDestroy() {
-        /*
-         * Remove stream voice control
-         */
-        if (themedReactContext.getCurrentActivity() != null) {
-            themedReactContext.getCurrentActivity().setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
-        }
-        /*
-         * Always disconnect from the room before leaving the Activity to
-         * ensure any memory allocated to the Room resource is freed.
-         */
-        if (room != null && room.getState() != Room.State.DISCONNECTED) {
-            room.disconnect();
-            disconnectedFromOnDestroy = true;
-        }
-
-        /*
-         * Release the local media ensuring any memory allocated to audio or video is freed.
-         */
-        if (localVideoTrack != null) {
-            localVideoTrack.release();
-            localVideoTrack = null;
-        }
-
-        if (android.os.Build.VERSION.SDK_INT >= 29) {
-            screenCapturerManager.unbindService();
-        }
-
-        if (localAudioTrack != null) {
-            localAudioTrack.release();
-            audioManager.stopBluetoothSco();
-            localAudioTrack = null;
-        }
-
-        // Quit the data track message thread
-        dataTrackMessageThread.quit();
-
-
+      releaseResource();
     }
 
     public void releaseResource() {
-        themedReactContext.removeLifecycleEventListener(this);
-        room = null;
-        localVideoTrack = null;
-        thumbnailVideoView = null;
-        cameraCapturer = null;
-        screenCapturer = null;
+      thumbnailVideoView = null;
+      roomName = null;
+      accessToken = null;
+      room = null;
+      localVideoTrack = null;
+      thumbnailVideoView = null;
+      cameraCapturer = null;
+      screenCapturer = null;
+
+      /*
+        * Remove stream voice control
+        */
+      if (themedReactContext != null && themedReactContext.getCurrentActivity() != null) {
+          themedReactContext.getCurrentActivity().setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+          themedReactContext.removeLifecycleEventListener(this);
+      }
+      /*
+        * Always disconnect from the room before leaving the Activity to
+        * ensure any memory allocated to the Room resource is freed.
+        */
+      if (room != null && room.getState() != Room.State.DISCONNECTED) {
+          room.disconnect();
+          disconnectedFromOnDestroy = true;
+      }
+      room = null;
+
+
+      if (localParticipant != null) {
+          localParticipant.unpublishTrack(localVideoTrack);
+          localParticipant = null;
+      }
+
+      if (localVideoTrack != null) {
+          localVideoTrack.release();
+          localVideoTrack = null;
+      }
+
+      if (android.os.Build.VERSION.SDK_INT >= 29) {
+          screenCapturerManager.unbindService();
+      }
+
+      if (localAudioTrack != null) {
+          localAudioTrack.release();
+          audioManager.stopBluetoothSco();
+          localAudioTrack = null;
+      }
+
+      if (cameraCapturer != null) {
+          cameraCapturer.stopCapture();
+          cameraCapturer = null;
+      }
+
+      // Quit the data track message thread
+      dataTrackMessageThread.quit();
     }
 
     // ====== CONNECTING ===========================================================================
