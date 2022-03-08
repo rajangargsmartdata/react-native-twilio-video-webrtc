@@ -124,6 +124,7 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_PARTICI
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECORDING_STARTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECORDING_STOPPED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS;
 
 public class CustomTwilioVideoView extends View implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "CustomTwilioVideoView";
@@ -195,6 +196,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         String ON_SCREEN_SHARE_CHANGED = "onScreenShareChanged";
         String ON_RECORDING_STARTED = "onRecordingStarted";
         String ON_RECORDING_STOPPED = "onRecordingStopped";
+        String ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS = "onLocalParticipantSupportedCodecs";
     }
 
     private final ThemedReactContext themedReactContext;

@@ -165,6 +165,10 @@ const propTypes = {
    * This method is only called when a Room which was previously recording stops recording.
    */
   onRecordingStopped: PropTypes.func,
+  /**
+   * Callback that is called after determining what codecs are supported
+   */
+  onLocalParticipantSupportedCodecs: PropTypes.func,
 };
 
 const nativeEvents = {
@@ -317,32 +321,32 @@ class CustomTwilioVideoView extends Component {
 
   buildNativeEventWrappers() {
     return [
-      'onCameraSwitched',
-      'onVideoChanged',
+      "onCameraSwitched",
+      "onVideoChanged",
+      "onAudioChanged",
       'onScreenShareChanged',
-      'onAudioChanged',
-      'onRoomDidConnect',
-      'onRoomDidFailToConnect',
-      'onRoomDidDisconnect',
-      'onParticipantAddedDataTrack',
-      'onParticipantRemovedDataTrack',
-      'onDataTrackMessageReceived',
-      'onParticipantAddedVideoTrack',
-      'onParticipantRemovedVideoTrack',
-      'onParticipantAddedAudioTrack',
-      'onParticipantRemovedAudioTrack',
-      'onRoomParticipantDidConnect',
-      'onRoomParticipantDidDisconnect',
-      'onParticipantEnabledVideoTrack',
-      'onParticipantDisabledVideoTrack',
-      'onParticipantEnabledAudioTrack',
-      'onParticipantDisabledAudioTrack',
-      'onStatsReceived',
-      'onNetworkQualityLevelsChanged',
-      'onDominantSpeakerDidChange',
-      'onLocalParticipantSupportedCodecs',
-      'onRecordingStarted',
-      'onRecordingStopped',
+      "onRoomDidConnect",
+      "onRoomDidFailToConnect",
+      "onRoomDidDisconnect",
+      "onParticipantAddedDataTrack",
+      "onParticipantRemovedDataTrack",
+      "onDataTrackMessageReceived",
+      "onParticipantAddedVideoTrack",
+      "onParticipantRemovedVideoTrack",
+      "onParticipantAddedAudioTrack",
+      "onParticipantRemovedAudioTrack",
+      "onRoomParticipantDidConnect",
+      "onRoomParticipantDidDisconnect",
+      "onParticipantEnabledVideoTrack",
+      "onParticipantDisabledVideoTrack",
+      "onParticipantEnabledAudioTrack",
+      "onParticipantDisabledAudioTrack",
+      "onStatsReceived",
+      "onNetworkQualityLevelsChanged",
+      "onDominantSpeakerDidChange",
+      "onRecordingStarted",
+      "onRecordingStopped",
+      "onLocalParticipantSupportedCodecs",
     ].reduce((wrappedEvents, eventName) => {
       if (this.props[eventName]) {
         return {

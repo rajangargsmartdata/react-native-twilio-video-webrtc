@@ -46,6 +46,7 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_SCREEN_SHARE_
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECORDING_STARTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECORDING_STOPPED;
 
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS;
 
 public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilioVideoView> {
     public static final String REACT_CLASS = "RNCustomTwilioVideoView";
@@ -196,6 +197,7 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ON_SCREEN_SHARE_CHANGED, MapBuilder.of("registrationName", ON_SCREEN_SHARE_CHANGED)
                 ON_RECORDING_STARTED, MapBuilder.of("registrationName", ON_RECORDING_STARTED),
                 ON_RECORDING_STOPPED, MapBuilder.of("registrationName", ON_RECORDING_STOPPED)
+                ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS, MapBuilder.of("registrationName", ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS)
         ));
 
         map.putAll(MapBuilder.of(
