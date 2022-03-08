@@ -156,6 +156,10 @@ const propTypes = {
    * This method is only called when a Room which was previously recording stops recording.
    */
   onRecordingStopped: PropTypes.func,
+  /**
+   * Callback that is called after determining what codecs are supported
+   */
+  onLocalParticipantSupportedCodecs: PropTypes.func,
 };
 
 const nativeEvents = {
@@ -199,6 +203,7 @@ class CustomTwilioVideoView extends Component {
     enableNetworkQualityReporting = false,
     dominantSpeakerEnabled = false,
     maintainVideoTrackInBackground = false,
+    encodingParameters = {},
   }) {
     this.runCommand(nativeEvents.connectToRoom, [
       roomName,
@@ -210,6 +215,7 @@ class CustomTwilioVideoView extends Component {
       dominantSpeakerEnabled,
       maintainVideoTrackInBackground,
       cameraType,
+      encodingParameters,
     ]);
   }
 
@@ -317,6 +323,7 @@ class CustomTwilioVideoView extends Component {
       "onDominantSpeakerDidChange",
       "onRecordingStarted",
       "onRecordingStopped",
+      "onLocalParticipantSupportedCodecs",
     ].reduce((wrappedEvents, eventName) => {
       if (this.props[eventName]) {
         return {
