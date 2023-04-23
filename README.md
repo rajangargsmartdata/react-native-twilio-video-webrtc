@@ -362,7 +362,6 @@ const Example = (props) => {
         </View>
       )}
 
-
       {(status === "connected" || status === "connecting") && (
         <View style={styles.callContainer}>
           {status === "connected" && (
