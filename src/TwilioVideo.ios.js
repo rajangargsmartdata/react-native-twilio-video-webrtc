@@ -231,8 +231,8 @@ export default class TwilioVideo extends Component {
   /**
    * Toggle screen sharing
    */
-  toggleScreenSharing (status) {
-    TWVideoModule.toggleScreenSharing(status)
+  toggleScreenSharing(status) {
+    TWVideoModule.toggleScreenSharing(status);
   }
 
   /**
@@ -351,7 +351,7 @@ export default class TwilioVideo extends Component {
           this.props.onScreenShareChanged(data)
         }
       }),
-      this._eventEmitter.addListener('roomDidConnect', (data) => {
+      this._eventEmitter.addListener("roomDidConnect", (data) => {
         if (this.props.onRoomDidConnect) {
           this.props.onRoomDidConnect(data);
         }
