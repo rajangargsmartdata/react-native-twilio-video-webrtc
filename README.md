@@ -39,7 +39,7 @@ yarn add react-native-twilio-video-webrtc
 #### Option B: npm
 
 ```shell
-npm install react-native-twilio-video-webrtc --save
+npm install react-native-twilio-video-webrtc
 ```
 
 ### Usage with Expo
