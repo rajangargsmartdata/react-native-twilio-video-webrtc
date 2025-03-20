@@ -156,6 +156,14 @@ export default class TwilioVideo extends Component {
      * camera will require calling `_startLocalVideo`.
      */
     autoInitializeCamera: PropTypes.bool,
+    /**
+     * This method is only called when a Room which was not previously recording starts recording.
+     */
+    onRecordingStarted: PropTypes.func,
+    /**
+     * This method is only called when a Room which was previously recording stops recording.
+     */
+    onRecordingStopped: PropTypes.func,
     ...View.propTypes,
   };
 
@@ -472,6 +480,17 @@ export default class TwilioVideo extends Component {
           this.props.onDominantSpeakerDidChange(data);
         }
       }),
+      this._eventEmitter.addListener('roomDidStartRecording', (data) => {
+        if (this.props.onRecordingStarted) {
+          this.props.onRecordingStarted(data);
+        }
+      }),
+      this._eventEmitter.addListener('roomDidStopRecording', (data) => {
+        if (this.props.onRecordingStopped) {
+          this.props.onRecordingStopped(data);
+        }
+      })
+
     ];
   }
 

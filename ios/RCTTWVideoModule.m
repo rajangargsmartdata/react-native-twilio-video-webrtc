@@ -36,6 +36,8 @@ static NSString* cameraInterruptionEnded      = @"cameraInterruptionEnded";
 static NSString* cameraDidStopRunning         = @"cameraDidStopRunning";
 static NSString* statsReceived                = @"statsReceived";
 static NSString* networkQualityLevelsChanged  = @"networkQualityLevelsChanged";
+static NSString* roomDidStartRecording        = @"roomDidStartRecording";
+static NSString* roomDidStopRecording         = @"roomDidStopRecording";
 
 static const CMVideoDimensions kRCTTWVideoAppCameraSourceDimensions = (CMVideoDimensions){900, 720};
 
@@ -115,7 +117,9 @@ RCT_EXPORT_MODULE();
     cameraInterruptionEnded,
     statsReceived,
     networkQualityLevelsChanged,
-    dominantSpeakerDidChange
+    dominantSpeakerDidChange,
+    roomDidStartRecording,
+    roomDidStopRecording
   ];
 }
 
@@ -713,6 +717,14 @@ RCT_EXPORT_METHOD(disconnect) {
 
 - (void)remoteParticipant:(nonnull TVIRemoteParticipant *)participant networkQualityLevelDidChange:(TVINetworkQualityLevel)networkQualityLevel {
     [self sendEventCheckingListenerWithName:networkQualityLevelsChanged body:@{ @"participant": [participant toJSON], @"isLocalUser": [NSNumber numberWithBool:false], @"quality": [NSNumber numberWithInt:(int)networkQualityLevel]}];
+}
+
+- (void)roomDidStartRecording: (nonnull TVIRoom *)room{
+    [self sendEventCheckingListenerWithName:roomDidStartRecording body:@{}];
+}
+
+- (void)roomDidStopRecording: (nonnull TVIRoom *)room{
+    [self sendEventCheckingListenerWithName:roomDidStopRecording body:@{}];
 }
 
 # pragma mark - TVIRemoteDataTrackDelegate

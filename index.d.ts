@@ -66,12 +66,12 @@ declare module "react-native-twilio-video-webrtc" {
     error: any;
   };
 
-  type RoomEventArgs = RoomEventCommonArgs & {
+  export type RoomEventArgs = RoomEventCommonArgs & {
     participants: Participant[];
     localParticipant: Participant;
   };
 
-  type ParticipantEventArgs = RoomEventCommonArgs & {
+  export type ParticipantEventArgs = RoomEventCommonArgs & {
     participant: Participant;
   };
 
