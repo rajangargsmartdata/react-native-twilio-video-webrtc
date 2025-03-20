@@ -2,7 +2,7 @@
   "name": "react-native-twilio-video-webrtc",
   "repository": {
     "type": "git",
-    "url": "https://github.com/blackuy/react-native-twilio-video-webrtc.git"
+    "url": "https://github.com/ttebify/react-native-twilio-video-webrtc.git"
   },
   "homepage": "https://github.com/blackuy/react-native-twilio-video-webrtc",
   "version": "3.2.1",
@@ -47,6 +47,15 @@
     "semver": "5.7.2",
     "tough-cookie": "4.1.4",
     "word-wrap": "^1.2.5"
+  },
+  "peerDependencies": {
+    "expo": ">=47.0.0",
+    "expo-build-properties": ">=0.5.1"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   },
   "peerDependencies": {
     "expo": ">=47.0.0",

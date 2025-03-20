@@ -34,8 +34,13 @@ const propTypes = {
   onVideoChanged: PropTypes.func,
 
   /**
-   * Callback that is called when a audio is toggled.
-   */
+     * Callback that is called when screen share permission received.
+     */
+  onScreenShareChanged: PropTypes.func,
+
+  /**
+     * Callback that is called when a audio is toggled.
+     */
   onAudioChanged: PropTypes.func,
 
   /**
@@ -160,6 +165,18 @@ const propTypes = {
    * Callback that is called after determining what codecs are supported
    */
   onLocalParticipantSupportedCodecs: PropTypes.func,
+  /**
+   * This method is only called when a Room which was not previously recording starts recording.
+   */
+  onRecordingStarted: PropTypes.func,
+  /**
+   * This method is only called when a Room which was previously recording stops recording.
+   */
+  onRecordingStopped: PropTypes.func,
+  /**
+   * Callback that is called after determining what codecs are supported
+   */
+  onLocalParticipantSupportedCodecs: PropTypes.func,
 };
 
 const nativeEvents = {
@@ -178,7 +195,8 @@ const nativeEvents = {
   publishVideo: 13,
   publishAudio: 14,
   setRemoteAudioPlayback: 15,
-};
+  toggleScreenShare: 15
+}
 
 class CustomTwilioVideoView extends Component {
   _videoRef = null;
@@ -257,6 +275,10 @@ class CustomTwilioVideoView extends Component {
     return Promise.resolve(enabled);
   }
 
+  setScreenShareEnabled (enabled) {
+    this.runCommand(nativeEvents.toggleScreenShare, [enabled])
+  }
+
   setLocalAudioEnabled(enabled) {
     this.runCommand(nativeEvents.toggleSound, [enabled]);
     return Promise.resolve(enabled);
@@ -310,6 +332,7 @@ class CustomTwilioVideoView extends Component {
       "onCameraSwitched",
       "onVideoChanged",
       "onAudioChanged",
+      'onScreenShareChanged',
       "onRoomDidConnect",
       "onRoomDidFailToConnect",
       "onRoomDidDisconnect",
