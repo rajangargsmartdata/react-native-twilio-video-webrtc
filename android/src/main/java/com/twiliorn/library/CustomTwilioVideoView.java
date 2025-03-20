@@ -198,9 +198,6 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         String ON_RECORDING_STOPPED = "onRecordingStopped";
         String ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS = "onLocalParticipantSupportedCodecs";
         String ON_SCREEN_SHARE_CHANGED = "onScreenShareChanged";
-        String ON_RECORDING_STARTED = "onRecordingStarted";
-        String ON_RECORDING_STOPPED = "onRecordingStopped";
-        String ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS = "onLocalParticipantSupportedCodecs";
     }
 
     private final ThemedReactContext themedReactContext;
@@ -505,9 +502,9 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
           localVideoTrack = null;
       }
 
-      if (android.os.Build.VERSION.SDK_INT >= 29) {
-          screenCapturerManager.unbindService();
-      }
+    //   if (android.os.Build.VERSION.SDK_INT >= 29) {
+    //       screenCapturerManager.unbindService();
+    //   }
 
       if (localAudioTrack != null) {
           localAudioTrack.release();

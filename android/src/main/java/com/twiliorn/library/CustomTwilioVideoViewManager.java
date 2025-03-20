@@ -197,9 +197,9 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
         map.putAll(MapBuilder.of(
                 ON_PARTICIPANT_REMOVED_DATA_TRACK, MapBuilder.of("registrationName", ON_PARTICIPANT_REMOVED_DATA_TRACK),
                 ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS, MapBuilder.of("registrationName", ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS),
-                ON_SCREEN_SHARE_CHANGED, MapBuilder.of("registrationName", ON_SCREEN_SHARE_CHANGED)
+                ON_SCREEN_SHARE_CHANGED, MapBuilder.of("registrationName", ON_SCREEN_SHARE_CHANGED),
                 ON_RECORDING_STARTED, MapBuilder.of("registrationName", ON_RECORDING_STARTED),
-                ON_RECORDING_STOPPED, MapBuilder.of("registrationName", ON_RECORDING_STOPPED)
+                ON_RECORDING_STOPPED, MapBuilder.of("registrationName", ON_RECORDING_STOPPED),
                 ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS, MapBuilder.of("registrationName", ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS)
         ));
 
