@@ -41,6 +41,9 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_D
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_NETWORK_QUALITY_LEVELS_CHANGED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DOMINANT_SPEAKER_CHANGED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECORDING_STARTED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_RECORDING_STOPPED;
+
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS;
 
 public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilioVideoView> {
@@ -65,6 +68,12 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
     @Override
     public String getName() {
         return REACT_CLASS;
+    }
+
+    @Override
+    public void onDropViewInstance(CustomTwilioVideoView view) {
+      view.onHostDestroy();
+      super.onDropViewInstance(view);
     }
 
     @Override
@@ -177,6 +186,8 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
 
         map.putAll(MapBuilder.of(
                 ON_PARTICIPANT_REMOVED_DATA_TRACK, MapBuilder.of("registrationName", ON_PARTICIPANT_REMOVED_DATA_TRACK),
+                ON_RECORDING_STARTED, MapBuilder.of("registrationName", ON_RECORDING_STARTED),
+                ON_RECORDING_STOPPED, MapBuilder.of("registrationName", ON_RECORDING_STOPPED)
                 ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS, MapBuilder.of("registrationName", ON_LOCAL_PARTICIPANT_SUPPORTED_CODECS)
         ));
 
@@ -208,5 +219,9 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 .put("toggleBluetoothHeadset", TOGGLE_BLUETOOTH_HEADSET)
                 .put("sendString", SEND_STRING)
                 .build();
+    }
+
+    public boolean isRecording(CustomTwilioVideoView view) {
+      return view.isRecording();
     }
 }
