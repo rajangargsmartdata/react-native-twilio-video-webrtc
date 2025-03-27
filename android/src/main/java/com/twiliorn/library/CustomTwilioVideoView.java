@@ -272,13 +272,14 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
                                 stopScreenCapture();
                             }
                         });
+                        if (Build.VERSION.SDK_INT >= 29) {
+                            screenCapturerManager.startForeground();
+                        }
+                        startScreenCapture();
+
+                    } catch (Exception e) {
+                        Log.e("RNTwilioScreenShare", e);
                     }
-                    if (Build.VERSION.SDK_INT >= 29) {
-                        screenCapturerManager.startForeground();
-                    }
-                    startScreenCapture();
-                }catch(Exception e){
-                    Log.e("RNTwilioScreenShare", e);
                 }
             }
         }
