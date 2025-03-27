@@ -23,13 +23,17 @@ import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
+
 import android.os.Handler;
 import android.os.HandlerThread;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
+
 import android.util.Log;
 import android.view.View;
 
@@ -90,6 +94,7 @@ import tvi.webrtc.Camera1Enumerator;
 import tvi.webrtc.HardwareVideoEncoderFactory;
 import tvi.webrtc.HardwareVideoDecoderFactory;
 import tvi.webrtc.VideoCodecInfo;
+
 import com.twilio.video.H264Codec;
 import com.twilio.video.Vp8Codec;
 
@@ -254,22 +259,26 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
                 if (resultCode != Activity.RESULT_OK) {
                     Log.d("RNTwilioScreenShare", "Screen capture permission not granted");
                 } else {
-                    screenCapturer = new ScreenCapturer(themedReactContext, resultCode, data, new ScreenCapturer.Listener() {
-                        @Override
-                        public void onFirstFrameAvailable() {
-                            Log.d("RNTwilioScreenShare", "First frame from screen capturer available");
-                        }
+                    try {
+                        screenCapturer = new ScreenCapturer(themedReactContext, resultCode, data, new ScreenCapturer.Listener() {
+                            @Override
+                            public void onFirstFrameAvailable() {
+                                Log.d("RNTwilioScreenShare", "First frame from screen capturer available");
+                            }
 
-                        @Override
-                        public void onScreenCaptureError(String errorDescription) {
-                            Log.e("RNTwilioScreenShare", "Screen capturer error: " + errorDescription);
-                            stopScreenCapture();
-                        }
-                    });
+                            @Override
+                            public void onScreenCaptureError(String errorDescription) {
+                                Log.e("RNTwilioScreenShare", "Screen capturer error: " + errorDescription);
+                                stopScreenCapture();
+                            }
+                        });
+                    }
                     if (Build.VERSION.SDK_INT >= 29) {
                         screenCapturerManager.startForeground();
                     }
                     startScreenCapture();
+                }catch(Exception e){
+                    Log.e("RNTwilioScreenShare", e);
                 }
             }
         }
@@ -413,9 +422,9 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
              * If the local video track was released when the app was put in the background, recreate.
              */
             if (localVideoTrack == null) {
-                if(screenCapturer != null) {
+                if (screenCapturer != null) {
                     localVideoTrack = LocalVideoTrack.create(getContext(), isScreenShareEnabled, screenCapturer);
-                } else if(cameraCapturer != null) {
+                } else if (cameraCapturer != null) {
                     localVideoTrack = LocalVideoTrack.create(getContext(), isVideoEnabled, cameraCapturer, buildVideoFormat());
                 }
             }
@@ -464,64 +473,64 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
     @Override
     public void onHostDestroy() {
-      releaseResource();
+        releaseResource();
     }
 
     public void releaseResource() {
-      thumbnailVideoView = null;
-      roomName = null;
-      accessToken = null;
-      room = null;
-      localVideoTrack = null;
-      thumbnailVideoView = null;
-      cameraCapturer = null;
-      screenCapturer = null;
+        thumbnailVideoView = null;
+        roomName = null;
+        accessToken = null;
+        room = null;
+        localVideoTrack = null;
+        thumbnailVideoView = null;
+        cameraCapturer = null;
+        screenCapturer = null;
 
-      /*
-        * Remove stream voice control
-        */
-      if (themedReactContext != null && themedReactContext.getCurrentActivity() != null) {
-          themedReactContext.getCurrentActivity().setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
-          themedReactContext.removeLifecycleEventListener(this);
-      }
-      /*
-        * Always disconnect from the room before leaving the Activity to
-        * ensure any memory allocated to the Room resource is freed.
-        */
-      if (room != null && room.getState() != Room.State.DISCONNECTED) {
-          room.disconnect();
-          disconnectedFromOnDestroy = true;
-      }
-      room = null;
+        /*
+         * Remove stream voice control
+         */
+        if (themedReactContext != null && themedReactContext.getCurrentActivity() != null) {
+            themedReactContext.getCurrentActivity().setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+            themedReactContext.removeLifecycleEventListener(this);
+        }
+        /*
+         * Always disconnect from the room before leaving the Activity to
+         * ensure any memory allocated to the Room resource is freed.
+         */
+        if (room != null && room.getState() != Room.State.DISCONNECTED) {
+            room.disconnect();
+            disconnectedFromOnDestroy = true;
+        }
+        room = null;
 
 
-      if (localParticipant != null) {
-          localParticipant.unpublishTrack(localVideoTrack);
-          localParticipant = null;
-      }
+        if (localParticipant != null) {
+            localParticipant.unpublishTrack(localVideoTrack);
+            localParticipant = null;
+        }
 
-      if (localVideoTrack != null) {
-          localVideoTrack.release();
-          localVideoTrack = null;
-      }
+        if (localVideoTrack != null) {
+            localVideoTrack.release();
+            localVideoTrack = null;
+        }
 
-    //   if (android.os.Build.VERSION.SDK_INT >= 29) {
-    //       screenCapturerManager.unbindService();
-    //   }
+        //   if (android.os.Build.VERSION.SDK_INT >= 29) {
+        //       screenCapturerManager.unbindService();
+        //   }
 
-      if (localAudioTrack != null) {
-          localAudioTrack.release();
-          audioManager.stopBluetoothSco();
-          localAudioTrack = null;
-      }
+        if (localAudioTrack != null) {
+            localAudioTrack.release();
+            audioManager.stopBluetoothSco();
+            localAudioTrack = null;
+        }
 
-      if (cameraCapturer != null) {
-          cameraCapturer.stopCapture();
-          cameraCapturer = null;
-      }
+        if (cameraCapturer != null) {
+            cameraCapturer.stopCapture();
+            cameraCapturer = null;
+        }
 
-      // Quit the data track message thread
-      dataTrackMessageThread.quit();
+        // Quit the data track message thread
+        dataTrackMessageThread.quit();
     }
 
     // ====== CONNECTING ===========================================================================
@@ -614,7 +623,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
         WritableArray supportedCodecs = new WritableNativeArray();
 
-        VideoCodec videoCodec =  new Vp8Codec();
+        VideoCodec videoCodec = new Vp8Codec();
         // VP8 is supported on all android devices by default
         supportedCodecs.pushString(videoCodec.toString());
 
@@ -649,14 +658,14 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         for (int i = 0; i < devicesInfo.length; i++) {
             int deviceType = devicesInfo[i].getType();
             if (
-                deviceType == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
-                deviceType == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                    deviceType == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+                            deviceType == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
             ) {
                 hasNonSpeakerphoneDevice = true;
             }
             if (
-                deviceType == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
-                deviceType == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
+                    deviceType == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
+                            deviceType == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
             ) {
                 audioManager.startBluetoothSco();
                 audioManager.setBluetoothScoOn(true);
@@ -795,7 +804,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     }
 
     public void toggleVideo(boolean enabled) {
-        if(enabled && screenCapturer != null && localVideoTrack != null) {
+        if (enabled && screenCapturer != null && localVideoTrack != null) {
             localVideoTrack.enable(false);
             publishLocalVideo(false);
 
@@ -823,7 +832,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
             localVideoTrack.enable(enabled);
             publishLocalVideo(enabled);
 
-            if(!enabled) {
+            if (!enabled) {
                 localVideoTrack.release();
                 localVideoTrack = null;
                 cameraCapturer = null;
@@ -837,14 +846,14 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
     public void toggleScreenShare(boolean enabled) {
         if (enabled) {
-                // This initiates a prompt dialog for the user to confirm screen projection.
-                if (mediaProjectionManager != null) {
-                    Activity currentActivity = this.themedReactContext.getCurrentActivity();
-                    currentActivity.startActivityForResult(
-                                mediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
-                } else {
-                    Log.d("RNTwilioScreenShare", "mediaProjectionManager is null");
-                }
+            // This initiates a prompt dialog for the user to confirm screen projection.
+            if (mediaProjectionManager != null) {
+                Activity currentActivity = this.themedReactContext.getCurrentActivity();
+                currentActivity.startActivityForResult(
+                        mediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
+            } else {
+                Log.d("RNTwilioScreenShare", "mediaProjectionManager is null");
+            }
         } else {
             if (android.os.Build.VERSION.SDK_INT >= 29) {
                 screenCapturerManager.endForeground();
@@ -854,7 +863,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     }
 
     private void startScreenCapture() {
-        if(cameraCapturer != null && localVideoTrack != null){
+        if (cameraCapturer != null && localVideoTrack != null) {
             localVideoTrack.enable(false);
             publishLocalVideo(false);
 
@@ -1080,11 +1089,11 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     }
 
     public boolean isActive() {
-      return room != null;
+        return room != null;
     }
 
     public boolean isRecording() {
-      return room.isRecording();
+        return room.isRecording();
     }
 
     public void disableOpenSLES() {
@@ -1198,16 +1207,16 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
             @Override
             public void onRecordingStarted(Room room) {
-              WritableMap event = new WritableNativeMap();
+                WritableMap event = new WritableNativeMap();
 
-              pushEvent(CustomTwilioVideoView.this, ON_RECORDING_STARTED, event);
+                pushEvent(CustomTwilioVideoView.this, ON_RECORDING_STARTED, event);
             }
 
             @Override
             public void onRecordingStopped(Room room) {
-              WritableMap event = new WritableNativeMap();
-              
-              pushEvent(CustomTwilioVideoView.this, ON_RECORDING_STOPPED, event);
+                WritableMap event = new WritableNativeMap();
+
+                pushEvent(CustomTwilioVideoView.this, ON_RECORDING_STOPPED, event);
             }
 
             @Override
