@@ -278,7 +278,6 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
                         startScreenCapture();
 
                     } catch (Exception e) {
-                        Log.e("RNTwilioScreenShare", e);
                     }
                 }
             }
@@ -848,8 +847,9 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     public void toggleScreenShare(boolean enabled) {
         if (enabled) {
             // This initiates a prompt dialog for the user to confirm screen projection.
-            if (mediaProjectionManager != null) {
-                Activity currentActivity = this.themedReactContext.getCurrentActivity();
+             Activity currentActivity = this.themedReactContext.getCurrentActivity();
+             mediaProjectionManager = (MediaProjectionManager) currentActivity.getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+             if (mediaProjectionManager != null) {
                 currentActivity.startActivityForResult(
                         mediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
             } else {
