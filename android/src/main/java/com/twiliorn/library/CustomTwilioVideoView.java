@@ -490,6 +490,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
          * Remove stream voice control
          */
         if (themedReactContext != null && themedReactContext.getCurrentActivity() != null) {
+            ReactApplicationContext getReactApplicationContext = themedReactContext.getReactApplicationContext();
+            getReactApplicationContext.removeActivityEventListener(activityEventListener);
             themedReactContext.getCurrentActivity().setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             themedReactContext.removeLifecycleEventListener(this);
         }
