@@ -9,7 +9,10 @@
 package com.twiliorn.library;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
@@ -226,6 +229,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
      */
     private static PatchedVideoView thumbnailVideoView;
     private static LocalVideoTrack localVideoTrack;
+    private static LocalVideoTrack localScreenTrack;
 
     private static CameraCapturer cameraCapturer;
     private static ScreenCapturer screenCapturer;
@@ -423,7 +427,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
              */
             if (localVideoTrack == null) {
                 if (screenCapturer != null) {
-                    localVideoTrack = LocalVideoTrack.create(getContext(), isScreenShareEnabled, screenCapturer);
+                    localScreenTrack = LocalVideoTrack.create(getContext(), isScreenShareEnabled, screenCapturer);
                 } else if (cameraCapturer != null) {
                     localVideoTrack = LocalVideoTrack.create(getContext(), isVideoEnabled, cameraCapturer, buildVideoFormat());
                 }
@@ -482,6 +486,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         accessToken = null;
         room = null;
         localVideoTrack = null;
+        localScreenTrack = null;
         thumbnailVideoView = null;
         cameraCapturer = null;
         screenCapturer = null;
@@ -508,12 +513,18 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
         if (localParticipant != null) {
             localParticipant.unpublishTrack(localVideoTrack);
+            localParticipant.unpublishTrack(localScreenTrack);
             localParticipant = null;
         }
 
         if (localVideoTrack != null) {
             localVideoTrack.release();
             localVideoTrack = null;
+        }
+
+        if (localScreenTrack != null) {
+            localScreenTrack.release();
+            localScreenTrack = null;
         }
 
         //   if (android.os.Build.VERSION.SDK_INT >= 29) {
@@ -590,11 +601,23 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
             connectOptionsBuilder.audioTracks(Collections.singletonList(localAudioTrack));
         }
 
+        // Create a list to hold all video tracks
+        List<LocalVideoTrack> allVideoTracks = new ArrayList<>();
+
         if (localVideoTrack != null) {
-            connectOptionsBuilder.videoTracks(Collections.singletonList(localVideoTrack));
+            allVideoTracks.add(localVideoTrack);
         }
 
-        //LocalDataTrack localDataTrack = LocalDataTrack.create(getContext());
+        if (localScreenTrack != null) {
+            // Set a different name for the screen track to distinguish it
+            localScreenTrack.setName("screen");
+            allVideoTracks.add(localScreenTrack);
+        }
+
+        // Set all video tracks at once
+        if (!allVideoTracks.isEmpty()) {
+            connectOptionsBuilder.videoTracks(allVideoTracks);
+        }
 
         if (localDataTrack != null) {
             connectOptionsBuilder.dataTracks(Collections.singletonList(localDataTrack));
@@ -849,9 +872,9 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     public void toggleScreenShare(boolean enabled) {
         if (enabled) {
             // This initiates a prompt dialog for the user to confirm screen projection.
-             Activity currentActivity = this.themedReactContext.getCurrentActivity();
-             mediaProjectionManager = (MediaProjectionManager) currentActivity.getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-             if (mediaProjectionManager != null) {
+            Activity currentActivity = this.themedReactContext.getCurrentActivity();
+            mediaProjectionManager = (MediaProjectionManager) currentActivity.getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+            if (mediaProjectionManager != null) {
                 currentActivity.startActivityForResult(
                         mediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
             } else {
@@ -866,30 +889,17 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     }
 
     private void startScreenCapture() {
-        if (cameraCapturer != null && localVideoTrack != null) {
-            localVideoTrack.enable(false);
-            publishLocalVideo(false);
-
-            localVideoTrack.release();
-            localVideoTrack = null;
-            cameraCapturer = null;
-
-            WritableMap event = new WritableNativeMap();
-            event.putBoolean("videoEnabled", false);
-            pushEvent(CustomTwilioVideoView.this, ON_VIDEO_CHANGED, event);
-        }
-
         isScreenShareEnabled = true;
 
-        localVideoTrack = LocalVideoTrack.create(getContext(), true, screenCapturer);
+        localScreenTrack = LocalVideoTrack.create(getContext(), true, screenCapturer);
 
-        if (thumbnailVideoView != null && localVideoTrack != null) {
-            localVideoTrack.addSink(thumbnailVideoView);
+        if (thumbnailVideoView != null && localScreenTrack != null) {
+            localScreenTrack.addSink(thumbnailVideoView);
         }
 
-        if (screenCapturer != null && localVideoTrack != null) {
-            localVideoTrack.enable(true);
-            publishLocalVideo(true);
+        if (screenCapturer != null && localScreenTrack != null) {
+            localScreenTrack.enable(true);
+            publishLocalScreen(true);
 
             WritableMap event = new WritableNativeMap();
             event.putBoolean("screenShareEnabled", true);
@@ -900,12 +910,12 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     private void stopScreenCapture() {
         isScreenShareEnabled = false;
 
-        if (screenCapturer != null && localVideoTrack != null) {
-            localVideoTrack.enable(false);
-            publishLocalVideo(false);
+        if (screenCapturer != null && localScreenTrack != null) {
+            localScreenTrack.enable(false);
+            publishLocalScreen(false);
 
-            localVideoTrack.release();
-            localVideoTrack = null;
+            localScreenTrack.release();
+            localScreenTrack = null;
             screenCapturer = null;
 
             WritableMap event = new WritableNativeMap();
@@ -990,6 +1000,15 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         }
     }
 
+    public void publishLocalScreen(boolean enabled) {
+        if (localParticipant != null && localScreenTrack != null) {
+            if (enabled) {
+                localParticipant.publishTrack(localScreenTrack);
+            } else {
+                localParticipant.unpublishTrack(localScreenTrack);
+            }
+        }
+    }
 
     private void convertBaseTrackStats(BaseTrackStats bs, WritableMap result) {
         result.putString("codec", bs.codec);
