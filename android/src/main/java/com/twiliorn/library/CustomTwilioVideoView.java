@@ -609,8 +609,6 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         }
 
         if (localScreenTrack != null) {
-            // Set a different name for the screen track to distinguish it
-            localScreenTrack.setName("screen");
             allVideoTracks.add(localScreenTrack);
         }
 
